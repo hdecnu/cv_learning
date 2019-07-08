@@ -1,0 +1,2 @@
+1、直接在本地把class1改名为week1，push到远程时远程的class1文件还在
+操作：git rm -r class1  git commit -m   git push 就清理干净了
