@@ -1,0 +1,27 @@
+1、if __name__ == '__main__'的意思是：当.py文件被直接运行时，if __name__ == '__main__'之下的代码块将被运行；当.py文件以模块形式被导入时，if __name__ == '__main__'之下的代码块不被运行。
+
+
+2、
+https://zhidao.baidu.com/question/492947917283828412.html
+https://www.cnblogs.com/jayliu/p/9030725.html
+https://www.jianshu.com/p/282adbc6ec00
+
+https://www.cnblogs.com/Allen-win/articles/8995384.html
+
+
+
+import random
+import string
+ran_str = ''.join(random.sample(string.ascii_letters,50))
+
+class Solution:
+    def longestPalindrome(self, s):
+        ans = len(s)
+        return ans
+
+a = Solution()
+ran_str = ''.join(random.sample(string.ascii_letters,50))
+a.longestPalindrome(ran_str) #a实例化，self参数与a绑定
+
+ran_str = ''.join(random.sample(string.ascii_letters,50))
+Solution.longestPalindrome(ran_str)  #函数里的self没有参数对应，或者说将ran_str对应到self
