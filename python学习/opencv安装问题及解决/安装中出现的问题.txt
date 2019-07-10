@@ -1,0 +1,12 @@
+本来装了这个
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple opencv-python
+
+
+
+但是由于安装的opencv版本太新,sift不能用，所以按安装老一点的，
+
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple opencv-contrib-python==3.4.2.16
+
+装了之后又发现import cv2有问题，所以导入一个补丁
+
+用win7 system32的那个补丁，放到cv2的目录下面就解决了

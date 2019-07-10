@@ -1,0 +1,11 @@
+https://zh-google-styleguide.readthedocs.io/en/latest/google-cpp-styleguide/naming/#type-names
+
+
+类之间空两行，类成员函数空一行
+缩进用tab
+文件名：全部用小写，可用下划线
+模块全小写，尽量不用下划线
+类：首字母大写的驼峰命名法，不用下划线
+方法：首字母小写的驼峰命名法
+普通变量命名：小写，可用下划线
+常量：全大写，可用下划线
