@@ -36,16 +36,17 @@ def medianBlur(img, kernel, padding_way):
     for x in range(W+m-1):
         for y in range(H+n-1):
             window = img_pad[x:x+m,y:y+n]*kernel
-            img_median[x,y] = np.median(window)        
+            img_median[x,y] = int(np.median(window))        
     return img_median
 
 
-kernel = np.ones((7,4))
-A = medianBlur(img,kernel,'ZERO')
+kernel = np.ones((5,5))
+A = medianBlur(img,kernel,'ZERO') #A的数据类型是float，要转化为uint8
+A1 = A.astype(np.uint8)  #uint8老是写成unit8
 B = medianBlur(img,kernel,'REPLICA')
 
 
-cv2.imshow('img',A)
+cv2.imshow('img_A',A1)
 key = cv2.waitKey()
 if key == 27:
     cv2.destroyAllWindows()
