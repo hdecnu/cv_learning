@@ -1,0 +1,2 @@
+https://github.com/fengdu78
+https://github.com/ddbourgin/numpy-ml
