@@ -10,19 +10,20 @@ from scipy import ndimage
 from PIL import Image
 import numpy as np
 from matplotlib import pyplot as plt
+import matplotlib as mpl
 from pylab import *
 import scipy.stats
 import cv2
 
 I = cv2.imread('d:/pictures/sift-input1.png',0)
-cv2.imshow('input1',I3)
+cv2.imshow('input1',I)
 key = cv2.waitKey()
 if key == 27:
     cv2.destroyAllWindows()
     
 
 s = 1.6
-k = sqrt(2)
+k = np.sqrt(2)
 row = len(I[0,:])
 clm = len(I[:,0])
 
@@ -33,10 +34,10 @@ def find_octave(I,s,k):
     L3 = cv2.GaussianBlur(I,(5,5),s*(k**2))
     L2 = cv2.GaussianBlur(I,(5,5),s*k)
     L1 = cv2.GaussianBlur(I,(5,5),s)
-    DOG4 = array(L5-L4)
-    DOG3 = array(L4-L3)
-    DOG2 = array(L3-L2)
-    DOG1 = array(L2-L1)
+    DOG4 = np.array(L5-L4)
+    DOG3 = np.array(L4-L3)
+    DOG2 = np.array(L3-L2)
+    DOG1 = np.array(L2-L1)
     return DOG1,DOG2,DOG3,DOG4
 
 #求极值点
@@ -81,18 +82,54 @@ I3 = cv2.resize(I,(int(row/8),int(clm/8))) # Down sample the input image again
 
 
 def find_key(DOG2_extx_1,DOG2_exty_1,ID2_1,DOG2_1):
-    for i in range(len(DOG2_extx_1)):
-        nx = DOG2_extx_1[i]
-        ny = DOG2_exty_1[i]
-        if abs(DOG2_1[nx+1,ny+1]) <= 0:
-            ID2_1[i] = 0
+    for i in range(len(DOG2_extx_1)):  
+        nx = DOG2_extx_1[i] # x index of extrema...
+        ny = DOG2_exty_1[i] # y index of extrema...
+        '''----- To remove the low contrast features-----------'''
+        if abs(DOG2_1[nx+1,ny+1]) <= 0:    # 0 here is the contrast threshold below which we eliminate the pixels...
+            ID2_1[i]=0 #eliminating the extrema....
+        else:
+            '''----- To remove the edges using tailor's expansion series-----------'''
+            rx,ry = nx+1,ny+1 # rx,ry are the indecies of the neighboring pixels of extremas....
+            if rx+1<DOG2_1.shape[0] and ry+1<DOG2_1.shape[1]: # avoiding index error on the below operation
+                fxx= DOG2_1[rx-1,ry]+DOG2_1[rx+1,ry]-2*DOG2_1[rx,ry]# double derivate in x direction
+                fyy= DOG2_1[rx,ry-1]+DOG2_1[rx,ry+1]-2*DOG2_1[rx,ry]; # double derivate in y direction
+                fxy= DOG2_1[rx-1,ry-1]+DOG2_1[rx+1,ry+1]-DOG2_1[rx-1,ry+1]-DOG2_1[rx+1,ry-1]; # derivate inx and y direction
+            trace=fxx+fyy    # trace(H) = Dxx+Dyy 
+            deter=fxx*fyy-fxy*fxy # Determinant(H) = DxxDyy - Dxy^2
+            r=trace*trace/deter # curvature 
+            th= ((r+1)**2)/r # curvature threshold...
+            # If the current keypoint id poorly localized, its rejected...
+            if (deter < 0 or r > th): # if the pixel belongs to an edge....
+                ID2_1[i]=0 # discard that pixel...
+        index = np.array(np.nonzero(ID2_1)) # updating the list of keypoints after elimination...
+    ID_new,x_new,y_new = [],[],[]
+    for i in range(np.size(index)):
+        ID_new.append(ID2_1[index[0,i]])
+        x_new.append(DOG2_extx_1[index[0,i]])
+        y_new.append(DOG2_exty_1[index[0,i]])
+    return x_new,y_new,ID_new
+
+(DOG2_extx_1key,DOG2_exty_1key,ID2_1key) = find_key(DOG2_extx_1,DOG2_exty_1,ID2_1,DOG2_1) # keypoints of DoG2 for OCtave 1
+(DOG3_extx_1key,DOG3_exty_1key,ID3_1key) = find_key(DOG3_extx_1,DOG3_exty_1,ID3_1,DOG3_1) # keypoints of DoG3 for OCtave 1
+(DOG2_extx_2key,DOG2_exty_2key,ID2_2key) = find_key(DOG2_extx_2,DOG2_exty_2,ID2_2,DOG2_2) # keypoints of DoG2 for OCtave 2
+(DOG3_extx_2key,DOG3_exty_2key,ID3_2key) = find_key(DOG3_extx_2,DOG3_exty_2,ID3_2,DOG3_2) # keypoints of DoG3 for OCtave 2
+(DOG2_extx_3key,DOG2_exty_3key,ID2_3key) = find_key(DOG2_extx_3,DOG2_exty_3,ID2_3,DOG2_3) # keypoints of DoG2 for OCtave 3
+(DOG3_extx_3key,DOG3_exty_3key,ID3_3key) = find_key(DOG3_extx_3,DOG3_exty_3,ID3_3,DOG3_3) # keypoints of DoG3 for OCtave 3
+(DOG2_extx_4key,DOG2_exty_4key,ID2_4key) = find_key(DOG2_extx_4,DOG2_exty_4,ID2_4,DOG2_4) # keypoints of DoG2 for OCtave 4
+(DOG3_extx_4key,DOG3_exty_4key,ID3_4key) = find_key(DOG3_extx_4,DOG3_exty_4,ID3_4,DOG3_4) # keypoints of DoG3 for OCtave 4
 
 
-
-
-
-
-
+x = DOG2_extx_1key+DOG3_extx_1key+DOG2_extx_2key+DOG3_extx_2key+DOG2_extx_3key+DOG3_extx_3key+DOG2_extx_4key+DOG3_extx_4key
+y = DOG2_exty_1key+DOG3_exty_1key+DOG2_exty_2key+DOG3_exty_2key+DOG2_exty_3key+DOG3_exty_3key+DOG2_exty_4key+DOG3_exty_4key
+#theta = theta2_1+theta3_1+theta2_2+theta3_2+theta2_3+theta3_3+theta2_4+theta3_4
+I = cv2.imread('d:/pictures/sift-input1.png',0)
+for i in range(len(x)):
+    if not(x[i]>160 and x[i]<450 and y[i]>625 and y[i]<800):
+                if not(x[i]>0 and x[i]<450 and y[i]>0 and y[i]<115): 
+                    cv2.circle(I,(y[i],x[i]), 2, (0,0,255),-1)
        
-
-    
+cv2.imshow('input1',I)
+key = cv2.waitKey()
+if key == 27:
+    cv2.destroyAllWindows()
