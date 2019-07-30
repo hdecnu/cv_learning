@@ -1,12 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jul 23 16:54:59 2019
-
-@author: Administrator
-"""
-
-# -*- coding: utf-8 -*-
-"""
 Created on Tue Jul 23 09:10:35 2019
 
 @author: Administrator
@@ -15,40 +8,27 @@ Created on Tue Jul 23 09:10:35 2019
 import numpy as np
 import sklearn.datasets
 import sklearn.linear_model
+import sklearn.metrics as mt
 
-# 生成数据集
-X = sklearn.datasets.load_iris().data
-y = sklearn.datasets.load_iris().target
-
-
-num_examples = len(X)       # size of training set
-nn_input_dim = 4
-nn_output_dim = 3
-#nn_hdim =5
-lr = 0.0001
-reg_lambda = 0.01  #正则化参数
-
-def calculate_loss(model):
+def calculate_loss(X,y,model):
+    num_examples = len(X)
     W1, b1, W2, b2 = model['W1'], model['b1'], model['W2'], model['b2']
     z1 = X.dot(W1) + b1
     a1 = np.tanh(z1)
-
     z2 = a1.dot(W2) + b2
-
     exp_scores = np.exp(z2)
     probs = exp_scores / np.sum(exp_scores, axis=1, keepdims=True)
-
     log_probs = -np.log(probs[range(num_examples), y])
     loss = np.sum(log_probs)
-
     return 1./num_examples * loss
 
-def build_model(nn_hdim, num_passes=30000, print_loss=False):
+def build_model(X,y,nn_hdim,lr,num_passes=30000, print_loss=False):
+    num_examples,nn_input_dim, = X.shape
+    nn_output_dim = len(set(y))
     W1 = np.random.randn(nn_input_dim, nn_hdim) / np.sqrt(nn_input_dim)
     b1 = np.zeros((1, nn_hdim))
     W2 = np.random.randn(nn_hdim, nn_output_dim) / np.sqrt(nn_hdim)
     b2 = np.zeros((1, nn_output_dim))
-
     model = {}
 
     # Gradient descent.
@@ -79,14 +59,15 @@ def build_model(nn_hdim, num_passes=30000, print_loss=False):
         model = {'W1': W1, 'b1':b1, 'W2':W2, 'b2': b2}
 
         if print_loss and i % 1000 == 0:
-            print("Loss after iteration %i: %f" % (i, calculate_loss(model)))
+            print("Loss after iteration %i: %f" % (i, calculate_loss(X,y,model)))
     return model
 
-
-# n-dimesional hidden layer
-model = build_model(5, print_loss = True)
-
-def predict(model):
+def predict():
+    X = sklearn.datasets.load_iris().data
+    y = sklearn.datasets.load_iris().target       # size of training set
+    nn_hdim =5
+    lr = 0.0001
+    model = build_model(X,y,nn_hdim,lr,print_loss = True)    
     W1, b1, W2, b2 = model['W1'], model['b1'], model['W2'], model['b2']   
     z1 = X.dot(W1) + b1
     a1 = np.tanh(z1)
@@ -94,15 +75,13 @@ def predict(model):
     exp_scores = np.exp(z2)
     probs = exp_scores / np.sum(exp_scores, axis=1, keepdims=True)   # this is softmax
     pre = np.argmax(probs,axis = 1)
-    return pre
+    #target_names = ['class1','class2','class3']
+    #hx = mt.classification_report(y,pre,target_names = target_names)
+    print("预测混淆矩阵")
+    print(mt.confusion_matrix(y,pre))  #行是真实值，列是预测值
 
-import sklearn.metrics as mt
-pre = predict(model)
-target_names = ['class1','class2']
-hx = mt.classification_report(y,pre,target_names = target_names)
-mt.confusion_matrix(y,pre)  #行是真实值，列是预测值
-
-
+if __name__ == '__main__':
+    predict()
 
 
 
