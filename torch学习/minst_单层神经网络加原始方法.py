@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Aug  2 12:22:05 2019
-
-@author: Administrator
+#用10个节点的单层网络，类似于逻辑回归，准确率仅有93%
 """
 
 import pickle
@@ -24,8 +22,6 @@ pyplot.imshow(x_train[2].reshape((28,28)),cmap="gray")
 
 x_train,y_train,x_valid,y_valid = map(torch.tensor,(x_train,y_train,x_valid,y_valid))
 n,c = x_train.shape
-print(x_train,y_train)
-print(y_train.min(),y_train.max())
 
 weights = torch.randn(784,10) / math.sqrt(784) #第一层有10个神经元
 weights.requires_grad_()
@@ -39,6 +35,7 @@ def model(xb):
 
 def nll(input,target):   #因为激活函数用了log_softmax，所以损失函数计算时就不用log了
 	return -input[range(target.shape[0]),target].mean()
+
 loss_func = nll
 
 def accuracy(out,yb):
@@ -77,7 +74,7 @@ for epoch in range(epochs):  #100次循环花了10s左右，
 #预测
 from sklearn.metrics import accuracy_score
 pred_valid = torch.argmax(model(x_valid),dim=1)
-accuracy_score(y_valid,pred_valid)  #用10个节点的单层网络，类似于逻辑回归，准确率仅有92.48%
+accuracy_score(y_valid,pred_valid)  
 
 
 

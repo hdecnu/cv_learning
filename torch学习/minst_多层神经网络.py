@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu Aug 15 15:48:15 2019
-
-@author: chenxiahang
+多层神经网络的准确率在98%左右
 """
 
 import pickle
@@ -14,6 +12,8 @@ from torch.utils.data import DataLoader
 from torch.utils.data import TensorDataset
 from torch import nn
 
+
+
 #读取数据
 DATA_PATH = Path('data')
 PATH = DATA_PATH / "mnist"
@@ -23,22 +23,27 @@ with gzip.open((PATH / FILENAME).as_posix(),"rb") as f:
 
 x_train,y_train,x_valid,y_valid = map(torch.tensor,(x_train,y_train,x_valid,y_valid))
 
-bs_train = 128
-bs_valid = 256
+bs_train = 64
+bs_valid = 128
 train_ds = TensorDataset(x_train,y_train)
 train_dl = DataLoader(train_ds, batch_size=bs_train,shuffle=True)
 valid_ds = TensorDataset(x_valid,y_valid)
 valid_dl = DataLoader(valid_ds, batch_size=bs_valid,shuffle=True)
 
 
-#定义两层网络
+#定义四层网络
 net = nn.Sequential(
-    nn.Linear(784, 300),#因为28*28=748
-    nn.ReLU(),
-    nn.Linear(300, 10))#最后输出10个分类
+        nn.Linear(784, 400),#因为28*28=748
+        nn.ReLU(),
+        nn.Linear(400, 200),
+        nn.ReLU(),
+        nn.Linear(200, 100),
+        nn.ReLU(),
+        nn.Linear(100, 10))#最后输出10个分类
+
 
 criterion = nn.CrossEntropyLoss()
-optimizer = torch.optim.SGD(net.parameters(), 0.1)
+optimizer = torch.optim.SGD(net.parameters(), 0.05)
 
 
 losses = []
@@ -89,3 +94,8 @@ for e in range(50):
     print('epoch: {}, Train Loss: {:.6f}, Train Acc: {:.6f}, Eval Loss: {:.6f}, Eval Acc: {:.6f}'
           .format(e, train_loss / len(train_dl), train_acc / len(train_dl), 
                      eval_loss / len(valid_dl), eval_acc / len(valid_dl)))
+
+
+
+
+

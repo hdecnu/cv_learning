@@ -39,7 +39,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 
 for i in range(10,200,10):
-    clf_rf = RandomForestClassifier(n_estimators=100)
+    clf_rf = RandomForestClassifier(n_estimators=i)
     clf_rf.fit(x_train,y_train)  #随机森林还比较快的，几秒就好了
     y_pred_rf = clf_rf.predict(x_test)
     acc_rf = accuracy_score(y_test,y_pred_rf)  #准确率96.5%左右，比svm稍差
