@@ -1,0 +1,3 @@
+https://blog.csdn.net/xylin1012/article/details/81217988
+
+如果是[0,1]的数据，cv.imshow会自动*255
