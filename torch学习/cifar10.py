@@ -148,8 +148,8 @@ acces = []
 eval_losses = []
 eval_acces = []
 
-xb,yb = iter(trainloader).next()
-for e in range(10):
+
+for e in range(2):
     train_loss = 0
     train_acc = 0
     net.train()
@@ -193,7 +193,63 @@ for e in range(10):
           .format(e, train_loss / len(trainloader), train_acc / len(trainloader), 
                      eval_loss / len(testloader), eval_acc / len(testloader)))
 
-im,label=iter(testloader).next()
+#单独挑几个出来看看
+classes = ('plane', 'car', 'bird', 'cat','deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+c1 = x_test[10:20,:,:,:]
+y1 = net(c1)   
+_,y1 = y1.max(1)
+
+c11 = np.array(x_test[10:20,:,:,:])
+c11 = c11/2+0.5
+c11 = np.transpose(c11, (0,2, 3, 1))
+plt.imshow(c11[9,:,:,:])
+
 
 
 #用传统方法看看
+X1 = data1['data']
+label1 = data1['labels']
+X2 = data2['data']
+label2 = data2['labels']
+X3 = data3['data']
+label3 = data3['labels']
+X4 = data4['data']
+label4 = data4['labels']
+X5 = data5['data']
+label5 = data5['labels']
+
+x_train = np.vstack((X1,X2,X3,X4,X5))
+x_train = x_train/255
+x_train = (x_train-0.5)/0.5
+y_train = np.array([*label1,*label2,*label3,*label4,*label5])
+
+x_test = test['data']
+y_test= test['labels']
+
+
+from sklearn import svm
+import sklearn.metrics as mt
+
+#svm速度太慢，行不通了
+clf = svm.SVC(C=100.0, kernel='rbf', gamma=0.03)
+clf.fit(x_train,y_train)  #5万张图片训练了5分钟，可见当图片稍微增加时，svm就扛不住了,如果要交叉验证就更不行了
+pre = clf.predict(x_test)
+
+mt.confusion_matrix(y_test,pre)
+num_correct = sum(int(a == y) for a, y in zip(pre, y_test))
+print("svm模型的预测准确率为：%s" %(num_correct/len(y_test)))  #svm的预测准确率为98.48%
+
+
+#随机森林进行建模,训练集99%测试集连10%都不到，没法用
+from sklearn.ensemble import RandomForestClassifier
+rfc1 = RandomForestClassifier(random_state=620)
+rfc1.fit(x_train, y_train)
+y_pred = rfc1.predict(x_train)
+
+import sklearn.metrics as mt
+mt.confusion_matrix(y_train,y_pred)
+
+#测试集
+y_test_pred = rfc1.predict(x_test)
+mt.confusion_matrix(y_test,y_test_pred)
+
