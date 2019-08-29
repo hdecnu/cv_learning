@@ -19,12 +19,12 @@ def load_file(filename):
         data = pickle.load(fo, encoding='latin1')
     return data
 
-data1 = load_file('D:/pythonnotebook/data/cifar-10-batches-py/data_batch_1')
-data2 = load_file('D:/pythonnotebook/data/cifar-10-batches-py/data_batch_2')
-data3 = load_file('D:/pythonnotebook/data/cifar-10-batches-py/data_batch_3')
-data4 = load_file('D:/pythonnotebook/data/cifar-10-batches-py/data_batch_4')
-data5 = load_file('D:/pythonnotebook/data/cifar-10-batches-py/data_batch_5')
-test = load_file('D:/pythonnotebook/data/cifar-10-batches-py/test_batch')
+data1 = load_file('./data/cifar-10-batches-py/data_batch_1')
+data2 = load_file('./data/cifar-10-batches-py/data_batch_2')
+data3 = load_file('./data/cifar-10-batches-py/data_batch_3')
+data4 = load_file('./data/cifar-10-batches-py/data_batch_4')
+data5 = load_file('./data/cifar-10-batches-py/data_batch_5')
+test = load_file('./data/cifar-10-batches-py/test_batch')
 
 def datatr(x):
     x = x['data']
@@ -137,6 +137,45 @@ class MinstCnn(nn.Module):
         x = x.view(x.size(0), -1)
         x = self.fc(x)
         return x
+
+
+'''该网络测试集准确率有80%左右
+class Net(nn.Module):
+    def __init__(self):
+        super(Net, self).__init__()
+        self.conv1 = nn.Conv2d(3, 64, 3, padding = 1)
+        self.conv2 = nn.Conv2d(64, 64, 3, padding = 1)
+        self.conv3 = nn.Conv2d(64, 128, 3, padding = 1)
+        self.conv4 = nn.Conv2d(128, 128, 3, padding = 1)
+        self.conv5 = nn.Conv2d(128, 256, 3, padding = 1)
+        self.conv6 = nn.Conv2d(256, 256, 3, padding = 1)
+        self.maxpool = nn.MaxPool2d(2, 2)
+        self.avgpool = nn.AvgPool2d(2, 2)
+        self.globalavgpool = nn.AvgPool2d(8, 8)
+        self.bn1 = nn.BatchNorm2d(64)
+        self.bn2 = nn.BatchNorm2d(128)
+        self.bn3 = nn.BatchNorm2d(256)
+        self.dropout50 = nn.Dropout(0.5)
+        self.dropout10 = nn.Dropout(0.1)
+        self.fc = nn.Linear(256, 10)
+ 
+    def forward(self, x):
+        x = self.bn1(F.relu(self.conv1(x)))
+        x = self.bn1(F.relu(self.conv2(x)))
+        x = self.maxpool(x)
+        x = self.dropout10(x)
+        x = self.bn2(F.relu(self.conv3(x)))
+        x = self.bn2(F.relu(self.conv4(x)))
+        x = self.avgpool(x)
+        x = self.dropout10(x)
+        x = self.bn3(F.relu(self.conv5(x)))
+        x = self.bn3(F.relu(self.conv6(x)))
+        x = self.globalavgpool(x)
+        x = self.dropout50(x)
+        x = x.view(x.size(0), -1)
+        x = self.fc(x)
+        return x
+'''
 
 net = MinstCnn()
 criterion = nn.CrossEntropyLoss()
