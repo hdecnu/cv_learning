@@ -1,0 +1,11 @@
+
+Mac:
+conda install pytorch torchvision -c pytorch
+
+
+windows下
+conda install pytorch-cpu torchvision-cpu -c pytorch 
+import torch
+import torchvision
+
+就可以了，condarc中的channel可以都删除
