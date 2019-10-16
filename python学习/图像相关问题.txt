@@ -1,0 +1,5 @@
+图像坐标系与numpy的关系
+https://blog.csdn.net/lz0499/article/details/80978433
+
+图像的数据类型
+https://blog.csdn.net/hszzjs/article/details/79444558

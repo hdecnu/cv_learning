@@ -1,6 +1,12 @@
 
+
 Mac:
 conda install pytorch torchvision -c pytorch
+或者在anacona的界面上操作也可以
+
+Caffe2
+Conda install protobuf
+Conda install future
 
 
 windows下
